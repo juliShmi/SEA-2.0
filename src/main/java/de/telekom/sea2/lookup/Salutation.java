@@ -1,5 +1,6 @@
 package de.telekom.sea2.lookup;
 
-public class Salutation {
+public enum Salutation {
+	MR, MRS, OTHER;
 
 }
