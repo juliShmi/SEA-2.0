@@ -38,5 +38,6 @@ public enum Salutation {
 		}
 		throw new IllegalArgumentException("Unexpected value");
 	}
-
+	
+	
 }

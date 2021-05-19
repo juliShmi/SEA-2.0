@@ -5,13 +5,13 @@ import de.telekom.sea2.lookup.Salutation;
 public class Person {
 
 	private long id;
-	private static long idUpdate = 0;
+	//private static long counter = 0;
 	private Salutation salutation;
 	private String firstname;
 	private String lastname;
 
-	public Person(Salutation salutation, String firstname, String lastname) {
-		this.id = ++idUpdate;
+	public Person(long id, Salutation salutation, String firstname, String lastname) {
+		this.id = id;
 		this.salutation = salutation;
 		this.firstname = firstname;
 		this.lastname = lastname;

@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 
+import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.model.Person;
 
 public class PersonRepository {
@@ -23,16 +25,18 @@ public class PersonRepository {
 		this.statement = connection.createStatement();
 	}
 
-	public boolean create(Person p) throws SQLException {
-		while (true) {
+	public boolean create(Person p) throws SQLException, SQLIntegrityConstraintViolationException {
+		try {
 			PreparedStatement preparedStatement = connection
-					.prepareStatement("INSERT INTO personen ( ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
+					.prepareStatement("INSERT INTO personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
 			preparedStatement.setLong(1, p.getId());
-			preparedStatement.setObject(2, p.getSalutation()); // Object?
+			preparedStatement.setByte(2, toBytes(p.getSalutation())); // Object?
 			preparedStatement.setString(3, p.getFirstname());
 			preparedStatement.setString(4, p.getLastname());
 			preparedStatement.execute();
+		} finally {
 		}
+		return true;
 	}
 
 	public boolean update(Person p) {
@@ -41,22 +45,29 @@ public class PersonRepository {
 
 	public void get(long id) throws SQLException {
 		resultSet = statement.executeQuery("SELECT * FROM personen WHERE ID = " + id + "");
+		while (resultSet.next()) {
+			System.out.println("ID: " + resultSet.getLong(1)); // ID
+			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2))); // Anrede
+			System.out.println("Firstname: " + resultSet.getString(3)); // Vorname
+			System.out.println("Lastname: " + resultSet.getString(4)); // Nachname
+		}
 
 	}
 
-	public String[] getAll() throws SQLException {
+	public void getAll() throws SQLException {
 		resultSet = statement.executeQuery("SELECT * FROM personen");
 		while (resultSet.next()) {
 			System.out.println("ID: " + resultSet.getLong(1)); // ID
-			System.out.println("Anrede: " + resultSet.getObject(2)); // Anrede
+			System.out.println("Anrede: " + resultSet.getByte(2)); // Anrede
 			System.out.println("Vorname: " + resultSet.getString(3)); // Vorname
 			System.out.println("Nachname: " + resultSet.getString(4)); // Nachname
 		}
-		return null;
+		
 	}
 
 	public boolean delete(Person p) throws SQLException {
-		resultSet = statement.executeQuery("SELECT * FROM personen WHERE ID = " + p.getId() + ", ANREDE = " + p.getSalutation() + " , FIRSTNAME = " + p.getFirstname() + " , LASTNAME = " + p.getLastname() + "");
+		resultSet = statement.executeQuery("SELECT * FROM personen WHERE ID = " + p.getId() + ", ANREDE = "
+				+ p.getSalutation() + " , FIRSTNAME = " + p.getFirstname() + " , LASTNAME = " + p.getLastname() + "");
 		return true;
 	}
 
@@ -70,4 +81,29 @@ public class PersonRepository {
 		return true;
 	}
 
+	public byte toBytes(Salutation salutation) {
+		switch (salutation) {
+		case MR:
+			return 0;
+		case MRS:
+			return 1;
+		case OTHER:
+			return 2;
+		}
+		throw new IllegalArgumentException("Unexpected value");
+
+	}
+
+	public String fromBytes(byte salutation) {
+		switch (salutation) {
+		case 0:
+			return "Mr";
+		case 1:
+			return "Mrs";
+		case 2:
+			return "Other";
+		}
+		throw new IllegalArgumentException("Unexpected value");
+
+	}
 }
