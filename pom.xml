@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- Das eigentliche Projekt -->
 	<groupId>de.telekom.sea2</groupId><!-- -->
-	<artifactId>SEA2</artifactId><!-- -->
+	<artifactId>SEA-2.0</artifactId><!-- -->
 	<version>1.0</version><!-- -->
 	<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 	<dependencies>
