@@ -25,7 +25,7 @@ public class Menu {
 			showMenu();
 			result = inputMenu();
 			checkMenu(result);
-		} while (!result.equals("7"));
+		} while (!result.equals("8"));
 
 	}
 
@@ -37,11 +37,11 @@ public class Menu {
 		System.out.println("4: Delete person by ID");
 		System.out.println("5: Delete list");
 		System.out.println("6: Update person");
-		System.out.println("7: Quit");
+		System.out.println("7: Search person");
+		System.out.println("8: Quit");
 	}
 
 	private String inputMenu() {
-		java.util.Scanner scanner = new java.util.Scanner(System.in);
 		var input = scanner.nextLine();
 		return input;
 	}
@@ -53,10 +53,8 @@ public class Menu {
 			try {
 				inputPerson();
 			} catch (SQLIntegrityConstraintViolationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -81,7 +79,12 @@ public class Menu {
 			update();
 			break;
 		case "7":
-			System.out.println("7: quit");
+			System.out.println("7: Search person");
+			search();
+			break;
+		case "8":
+			System.out.println("8: quit");
+			close();
 			break;
 		default:
 			System.out.println("wrong task");
@@ -92,7 +95,7 @@ public class Menu {
 	private void update() throws SQLException, SQLDataException {
 		System.out.println("Input id for person to change: ");
 		long id = Long.parseLong(scanner.nextLine());
-		Person p = new Person(); //?
+		Person p = new Person(); // ?
 		p = pr.get(id);
 		p.setId(id);
 		System.out.println("Input salutation to change: ");
@@ -110,30 +113,32 @@ public class Menu {
 
 	private void removeAll() throws SQLException {
 		pr.deleteAll();
-		// TODO Auto-generated method stub
-
 	}
 
 	private void removeByID() throws SQLException {
 		System.out.println("Input id: ");
 		long id = Long.parseLong(scanner.nextLine());
 		pr.delete(id);
-
-		// TODO Auto-generated method stub
-
 	}
+	
+	private void search() throws SQLException {
+		System.out.println("Input firstname: ");
+		String firstname = scanner.nextLine();
+		System.out.println("Input lastname: ");
+		String lastname = scanner.nextLine();
+		pr.search(firstname, lastname);		
+		
+	}
+	
 
 	private void getList() throws SQLException {
 		pr.getAll();
-		// TODO Auto-generated method stub
-
 	}
 
 	private void getPerson() throws SQLException {
 		System.out.println("Input id: ");
 		long id = Long.parseLong(scanner.nextLine());
-		pr.get(id);// TODO Auto-generated method stub
-
+		pr.get(id);
 	}
 
 	private void inputPerson() throws SQLIntegrityConstraintViolationException, SQLException, ClassNotFoundException {
@@ -155,6 +160,10 @@ public class Menu {
 		p.setLastname(lastname);
 		pr.create(p);
 	}
-	// TODO Auto-generated method stub
+
+	private void close() throws SQLException {
+		scanner.close();
+		pr.close();
+	}
 
 }
