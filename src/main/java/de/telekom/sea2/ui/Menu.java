@@ -1,6 +1,7 @@
 package de.telekom.sea2.ui;
 
 import java.io.IOException;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Scanner;
@@ -14,7 +15,7 @@ public class Menu {
 	private String result;
 	private PersonRepository pr;
 	private Scanner scanner = new Scanner(System.in);
-	
+
 	public Menu() throws ClassNotFoundException, SQLException {
 		pr = new PersonRepository();
 	}
@@ -24,7 +25,7 @@ public class Menu {
 			showMenu();
 			result = inputMenu();
 			checkMenu(result);
-		} while (!result.equals("6"));
+		} while (!result.equals("7"));
 
 	}
 
@@ -35,7 +36,8 @@ public class Menu {
 		System.out.println("3: Show list");
 		System.out.println("4: Delete person by ID");
 		System.out.println("5: Delete list");
-		System.out.println("6: Quit");
+		System.out.println("6: Update person");
+		System.out.println("7: Quit");
 	}
 
 	private String inputMenu() {
@@ -75,11 +77,34 @@ public class Menu {
 			removeAll();
 			break;
 		case "6":
-			System.out.println("6: quit");
+			System.out.println("6: Update person");
+			update();
+			break;
+		case "7":
+			System.out.println("7: quit");
 			break;
 		default:
 			System.out.println("wrong task");
 		}
+
+	}
+
+	private void update() throws SQLException, SQLDataException {
+		System.out.println("Input id for person to change: ");
+		long id = Long.parseLong(scanner.nextLine());
+		Person p = new Person(); //?
+		p = pr.get(id);
+		p.setId(id);
+		System.out.println("Input salutation to change: ");
+		Salutation salutation = Salutation.fromString(scanner.nextLine());
+		p.setSalutation(salutation);
+		System.out.println("Input firstname to change: ");
+		String firstname = scanner.nextLine();
+		p.setFirstname(firstname);
+		System.out.println("Input lastname to change: ");
+		String lastname = scanner.nextLine();
+		p.setLastname(lastname);
+		pr.update(p);
 
 	}
 
@@ -93,7 +118,7 @@ public class Menu {
 		System.out.println("Input id: ");
 		long id = Long.parseLong(scanner.nextLine());
 		pr.delete(id);
-		
+
 		// TODO Auto-generated method stub
 
 	}
@@ -128,8 +153,7 @@ public class Menu {
 		System.out.println("Input lastname: ");
 		String lastname = scanner.nextLine();
 		p.setLastname(lastname);
-
-		pr.create(p); // add new pr
+		pr.create(p);
 	}
 	// TODO Auto-generated method stub
 

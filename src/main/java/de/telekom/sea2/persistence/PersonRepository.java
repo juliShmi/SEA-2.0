@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
@@ -14,7 +15,6 @@ import de.telekom.sea2.model.Person;
 public class PersonRepository {
 
 	private Person[] groupList;
-	private Person p;
 	private Connection connection;
 	private Statement statement;
 	private ResultSet resultSet;
@@ -25,7 +25,6 @@ public class PersonRepository {
 		Class.forName(DRIVER);
 		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb", "seauser", "seapass");
 		this.statement = connection.createStatement();
-		p = new Person();
 	}
 
 	public boolean create(Person p) throws SQLException, SQLIntegrityConstraintViolationException {
@@ -42,20 +41,32 @@ public class PersonRepository {
 		return true;
 	}
 
-	public boolean update(Person p) {
+	public boolean update(Person p) throws SQLException, SQLDataException {
 
+		PreparedStatement preparedStatement = connection
+				.prepareStatement("UPDATE personen SET VORNAME =?, NACHNAME =? WHERE ID =?");
+		preparedStatement.setString(1, p.getFirstname());
+		preparedStatement.setString(2, p.getLastname());
+		preparedStatement.setLong(3, p.getId());
+		preparedStatement.execute();
 		return true;
 	}
 
-	public void get(long id) throws SQLException {
+	public Person get(long id) throws SQLException {
+		Person person = new Person();
 		resultSet = statement.executeQuery("SELECT * FROM personen WHERE ID = " + id + "");
 		while (resultSet.next()) {
 			System.out.println("ID: " + resultSet.getLong(1));
 			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
-			String salut = fromBytes(resultSet.getByte(2));
 			System.out.println("Firstname: " + resultSet.getString(3));
 			System.out.println("Lastname: " + resultSet.getString(4));
+			person.setId(resultSet.getLong(1));
+			String salut = fromBytes(resultSet.getByte(2));
+			person.setSalutation(Salutation.fromString(salut));
+			person.setFirstname(resultSet.getString(3));
+			person.setLastname(resultSet.getString(4));
 		}
+		return person;
 
 	}
 
@@ -71,7 +82,7 @@ public class PersonRepository {
 		resultSet = statement.executeQuery("SELECT * FROM personen");
 		int i = 0;
 		while (resultSet.next()) {
-			Person person = new Person();
+			Person person = new Person(); // create new Instance every time
 			person.setId(resultSet.getLong(1));
 			String salut = fromBytes(resultSet.getByte(2));
 			person.setSalutation(Salutation.fromString(salut));
