@@ -14,6 +14,10 @@ public class Menu {
 	private String result;
 	private PersonRepository pr;
 	private Scanner scanner = new Scanner(System.in);
+	
+	public Menu() throws ClassNotFoundException, SQLException {
+		pr = new PersonRepository();
+	}
 
 	public void keepAsking() throws IOException, ClassNotFoundException, SQLException {
 		do {
@@ -79,17 +83,23 @@ public class Menu {
 
 	}
 
-	private void removeAll() {
+	private void removeAll() throws SQLException {
+		pr.deleteAll();
 		// TODO Auto-generated method stub
 
 	}
 
-	private void removeByID() {
+	private void removeByID() throws SQLException {
+		System.out.println("Input id: ");
+		long id = Long.parseLong(scanner.nextLine());
+		pr.delete(id);
+		
 		// TODO Auto-generated method stub
 
 	}
 
-	private void getList() {
+	private void getList() throws SQLException {
+		pr.getAll();
 		// TODO Auto-generated method stub
 
 	}
@@ -119,7 +129,6 @@ public class Menu {
 		String lastname = scanner.nextLine();
 		p.setLastname(lastname);
 
-		pr = new PersonRepository();
 		pr.create(p); // add new pr
 	}
 	// TODO Auto-generated method stub

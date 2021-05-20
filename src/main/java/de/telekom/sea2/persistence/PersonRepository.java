@@ -12,6 +12,8 @@ import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.model.Person;
 
 public class PersonRepository {
+
+	private Person[] groupList;
 	private Person p;
 	private Connection connection;
 	private Statement statement;
@@ -23,6 +25,7 @@ public class PersonRepository {
 		Class.forName(DRIVER);
 		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb", "seauser", "seapass");
 		this.statement = connection.createStatement();
+		p = new Person();
 	}
 
 	public boolean create(Person p) throws SQLException, SQLIntegrityConstraintViolationException {
@@ -40,29 +43,51 @@ public class PersonRepository {
 	}
 
 	public boolean update(Person p) {
+
 		return true;
 	}
 
 	public void get(long id) throws SQLException {
 		resultSet = statement.executeQuery("SELECT * FROM personen WHERE ID = " + id + "");
 		while (resultSet.next()) {
-			System.out.println("ID: " + resultSet.getLong(1)); // ID
-			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2))); // Anrede
-			System.out.println("Firstname: " + resultSet.getString(3)); // Vorname
-			System.out.println("Lastname: " + resultSet.getString(4)); // Nachname
+			System.out.println("ID: " + resultSet.getLong(1));
+			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
+			String salut = fromBytes(resultSet.getByte(2));
+			System.out.println("Firstname: " + resultSet.getString(3));
+			System.out.println("Lastname: " + resultSet.getString(4));
 		}
 
 	}
 
-	public void getAll() throws SQLException {
-		resultSet = statement.executeQuery("SELECT * FROM personen");
+	public Person[] getAll() throws SQLException {
+		resultSet = statement.executeQuery("SELECT COUNT (ID) FROM personen");
+		int peopleCounter = 0;
 		while (resultSet.next()) {
-			System.out.println("ID: " + resultSet.getLong(1)); // ID
-			System.out.println("Anrede: " + resultSet.getByte(2)); // Anrede
-			System.out.println("Vorname: " + resultSet.getString(3)); // Vorname
-			System.out.println("Nachname: " + resultSet.getString(4)); // Nachname
+			peopleCounter = resultSet.getInt(1);
 		}
-		
+		System.out.println("People in the table " + peopleCounter);
+
+		groupList = new Person[peopleCounter];
+		resultSet = statement.executeQuery("SELECT * FROM personen");
+		int i = 0;
+		while (resultSet.next()) {
+			Person person = new Person();
+			person.setId(resultSet.getLong(1));
+			String salut = fromBytes(resultSet.getByte(2));
+			person.setSalutation(Salutation.fromString(salut));
+			person.setFirstname(resultSet.getString(3));
+			person.setLastname(resultSet.getString(4));
+			groupList[i] = person;
+			i++;
+		}
+		for (int j = 0; j < peopleCounter; j++) {
+			System.out.println("ID: " + groupList[j].getId());
+			System.out.println("Anrede: " + groupList[j].getSalutation());
+			System.out.println("Vorname: " + groupList[j].getFirstname());
+			System.out.println("Nachname: " + groupList[j].getLastname());
+		}
+		return groupList;
+
 	}
 
 	public boolean delete(Person p) throws SQLException {
