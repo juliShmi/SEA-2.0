@@ -14,6 +14,7 @@ public class Menu {
 
 	private String result;
 	private PersonRepository pr;
+
 	private Scanner scanner = new Scanner(System.in);
 
 	public Menu() throws ClassNotFoundException, SQLException {
@@ -120,16 +121,17 @@ public class Menu {
 		long id = Long.parseLong(scanner.nextLine());
 		pr.delete(id);
 	}
-	
+
 	private void search() throws SQLException {
 		System.out.println("Input firstname: ");
 		String firstname = scanner.nextLine();
+		String fn = firstname.substring(0, 1).toUpperCase() + firstname.substring(1);
 		System.out.println("Input lastname: ");
 		String lastname = scanner.nextLine();
-		pr.search(firstname, lastname);		
-		
+		String ln = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
+		pr.search(fn, ln);
+
 	}
-	
 
 	private void getList() throws SQLException {
 		pr.getAll();
@@ -143,9 +145,6 @@ public class Menu {
 
 	private void inputPerson() throws SQLIntegrityConstraintViolationException, SQLException, ClassNotFoundException {
 		Person p = new Person();
-		System.out.println("Input id: ");
-		long id = Long.parseLong(scanner.nextLine());
-		p.setId(id);
 
 		System.out.println("Input salutation: ");
 		Salutation salutation = Salutation.fromString(scanner.nextLine());
@@ -153,11 +152,13 @@ public class Menu {
 
 		System.out.println("Input firstname: ");
 		String firstname = scanner.nextLine();
-		p.setFirstname(firstname);
+		String fn = firstname.substring(0, 1).toUpperCase() + firstname.substring(1);
+		p.setFirstname(fn);
 
 		System.out.println("Input lastname: ");
 		String lastname = scanner.nextLine();
-		p.setLastname(lastname);
+		String ln = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
+		p.setLastname(ln);
 		pr.create(p);
 	}
 

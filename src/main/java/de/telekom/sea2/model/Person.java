@@ -4,20 +4,15 @@ import de.telekom.sea2.lookup.Salutation;
 
 public class Person {
 
+	private static long idCount = 1;
 	private long id;
-	//private static long counter = 0;
 	private Salutation salutation;
 	private String firstname;
 	private String lastname;
 
-	public Person(long id, Salutation salutation, String firstname, String lastname) {
-		this.id = id;
-		this.salutation = salutation;
-		this.firstname = firstname;
-		this.lastname = lastname;
-	}
-
 	public Person() {
+		
+		this.id = ++idCount;
 	}
 
 	public long getId() {
