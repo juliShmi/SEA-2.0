@@ -120,11 +120,15 @@ public class PersonRepository {
 	public Person search(String vorname, String lastname) throws SQLException, SQLDataException {
 		String searchFN = "%" + vorname + "%";
 		String searchLN = "%" + lastname + "%";
-		preparedStatement = connection
-				.prepareStatement("SELECT * FROM personen WHERE VORNAME LIKE ? AND NACHNAME LIKE ?");
-		preparedStatement.setString(1, searchFN);
-		preparedStatement.setString(2, searchLN);
-		resultSet = preparedStatement.executeQuery();
+		try {
+			preparedStatement = connection
+					.prepareStatement("SELECT * FROM personen WHERE VORNAME LIKE ? AND NACHNAME LIKE ?");
+			preparedStatement.setString(1, searchFN);
+			preparedStatement.setString(2, searchLN);
+			resultSet = preparedStatement.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		while (resultSet.next()) {
 			Person person = new Person();
 			person.setId(resultSet.getLong(1));
