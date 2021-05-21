@@ -121,16 +121,17 @@ public class Menu {
 		long id = Long.parseLong(scanner.nextLine());
 		pr.delete(id);
 	}
-	
+
 	private void search() throws SQLException {
 		System.out.println("Input firstname: ");
 		String firstname = scanner.nextLine();
+		String fn = firstname.substring(0, 1).toUpperCase() + firstname.substring(1);
 		System.out.println("Input lastname: ");
 		String lastname = scanner.nextLine();
-		pr.search(firstname, lastname);		
-		
+		String ln = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
+		pr.search(fn, ln);
+
 	}
-	
 
 	private void getList() throws SQLException {
 		pr.getAll();
@@ -151,11 +152,13 @@ public class Menu {
 
 		System.out.println("Input firstname: ");
 		String firstname = scanner.nextLine();
-		p.setFirstname(firstname);
+		String fn = firstname.substring(0, 1).toUpperCase() + firstname.substring(1);
+		p.setFirstname(fn);
 
 		System.out.println("Input lastname: ");
 		String lastname = scanner.nextLine();
-		p.setLastname(lastname);
+		String ln = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
+		p.setLastname(ln);
 		pr.create(p);
 	}
 

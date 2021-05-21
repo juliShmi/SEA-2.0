@@ -11,6 +11,7 @@ public class Person {
 	private String lastname;
 
 	public Person() {
+		
 		this.id = ++idCount;
 	}
 

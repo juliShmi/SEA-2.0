@@ -117,39 +117,31 @@ public class PersonRepository {
 
 	}
 
-	public Person search(String firstname, String lastname) throws SQLException, SQLDataException { // in progress
-		Person person = new Person();
-		String searchFN = firstname + "%";
-		String searchLN = (lastname + "%");
-		preparedStatement = connection.prepareStatement("SELECT * FROM personen WHERE VORNAME LIKE ?, NACHNAME LIKE ?");
+	public Person search(String vorname, String lastname) throws SQLException, SQLDataException {
+		String searchFN = "%" + vorname + "%";
+		String searchLN = "%" + lastname + "%";
+		preparedStatement = connection
+				.prepareStatement("SELECT * FROM personen WHERE VORNAME LIKE ? AND NACHNAME LIKE ?");
 		preparedStatement.setString(1, searchFN);
 		preparedStatement.setString(2, searchLN);
 		resultSet = preparedStatement.executeQuery();
 		while (resultSet.next()) {
-			System.out.println("Firstname: " + resultSet.getString(3));
-			System.out.println("Lastname: " + resultSet.getString(4));
+			Person person = new Person();
 			person.setId(resultSet.getLong(1));
 			String salut = fromBytes(resultSet.getByte(2));
 			person.setSalutation(Salutation.fromString(salut));
 			person.setFirstname(resultSet.getString(3));
 			person.setLastname(resultSet.getString(4));
+			System.out.println("ID: " + resultSet.getLong(1));
+			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
+			System.out.println("Firstname: " + resultSet.getString(3));
+			System.out.println("Lastname: " + resultSet.getString(4));
+			return person;
 		}
-		return person;
+		System.out.println("Person not found");
+		return null;
 
 	}
-
-//	public boolean delete(Person p) throws SQLException {
-//		if (p == null)
-//			return false;
-//		preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE VORNAME =?, NACHNAME =?");
-//		resultSet = preparedStatement.executeQuery();
-//		while (resultSet.next()) {
-//			System.out.println("Firstname: " + resultSet.getString(1));
-//			System.out.println("Lastname: " + resultSet.getString(2));
-//			preparedStatement.execute();
-//		}
-//		return true;
-//	}
 
 	public boolean deleteAll() throws SQLException {
 		if (true) {
