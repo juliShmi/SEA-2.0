@@ -14,6 +14,7 @@ public class Menu {
 
 	private String result;
 	private PersonRepository pr;
+
 	private Scanner scanner = new Scanner(System.in);
 
 	public Menu() throws ClassNotFoundException, SQLException {
@@ -143,9 +144,6 @@ public class Menu {
 
 	private void inputPerson() throws SQLIntegrityConstraintViolationException, SQLException, ClassNotFoundException {
 		Person p = new Person();
-		System.out.println("Input id: ");
-		long id = Long.parseLong(scanner.nextLine());
-		p.setId(id);
 
 		System.out.println("Input salutation: ");
 		Salutation salutation = Salutation.fromString(scanner.nextLine());

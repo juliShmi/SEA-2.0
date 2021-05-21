@@ -29,6 +29,8 @@ public class PersonRepository {
 	}
 
 	public boolean create(Person p) throws SQLException, SQLIntegrityConstraintViolationException {
+		if (p == null)
+			return false;
 		try {
 			preparedStatement = connection
 					.prepareStatement("INSERT INTO personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
@@ -37,17 +39,29 @@ public class PersonRepository {
 			preparedStatement.setString(3, p.getFirstname());
 			preparedStatement.setString(4, p.getLastname());
 			preparedStatement.execute();
-		} finally {
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return true;
 	}
 
 	public boolean update(Person p) throws SQLException, SQLDataException {
-		preparedStatement = connection.prepareStatement("UPDATE personen SET VORNAME =?, NACHNAME =? WHERE ID =?");
-		preparedStatement.setString(1, p.getFirstname());
-		preparedStatement.setString(2, p.getLastname());
-		preparedStatement.setLong(3, p.getId());
-		preparedStatement.execute();
+		if (p == null) {
+			return false;
+		}
+		if (get(p.getId()) == null) {
+			System.out.println("Check ID, person doesn't exist");
+			return false;
+		}
+		try {
+			preparedStatement = connection.prepareStatement("UPDATE personen SET VORNAME =?, NACHNAME =? WHERE ID =?");
+			preparedStatement.setString(1, p.getFirstname());
+			preparedStatement.setString(2, p.getLastname());
+			preparedStatement.setLong(3, p.getId());
+			preparedStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return true;
 	}
 
@@ -103,7 +117,7 @@ public class PersonRepository {
 
 	}
 
-	public Person search(String firstname, String lastname) throws SQLException, SQLDataException { //in progress
+	public Person search(String firstname, String lastname) throws SQLException, SQLDataException { // in progress
 		Person person = new Person();
 		String searchFN = firstname + "%";
 		String searchLN = (lastname + "%");
@@ -124,16 +138,18 @@ public class PersonRepository {
 
 	}
 
-	public boolean delete(Person p) throws SQLException {
-		preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE VORNAME =?, NACHNAME =?");
-		resultSet = preparedStatement.executeQuery();
-		while (resultSet.next()) {
-			System.out.println("Firstname: " + resultSet.getString(1));
-			System.out.println("Lastname: " + resultSet.getString(2));
-			preparedStatement.execute();
-		}
-		return true;
-	}
+//	public boolean delete(Person p) throws SQLException {
+//		if (p == null)
+//			return false;
+//		preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE VORNAME =?, NACHNAME =?");
+//		resultSet = preparedStatement.executeQuery();
+//		while (resultSet.next()) {
+//			System.out.println("Firstname: " + resultSet.getString(1));
+//			System.out.println("Lastname: " + resultSet.getString(2));
+//			preparedStatement.execute();
+//		}
+//		return true;
+//	}
 
 	public boolean deleteAll() throws SQLException {
 		if (true) {
@@ -150,7 +166,6 @@ public class PersonRepository {
 			preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE ID = " + id + "");
 			preparedStatement.execute();
 		}
-		System.out.println("Check id");
 		return false;
 	}
 
