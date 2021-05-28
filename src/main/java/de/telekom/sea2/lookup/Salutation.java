@@ -4,6 +4,9 @@ public enum Salutation {
 	MR, MRS, OTHER;
 
 	public static Salutation fromString(final String value) {
+		if (value == "") {
+			throw new NullPointerException("Salutation is empty");
+		}
 		switch (value) {
 		case "mr":
 		case "MR":
@@ -25,6 +28,7 @@ public enum Salutation {
 			throw new IllegalArgumentException("Unexpected value: " + value);
 
 		}
+
 	}
 
 	public String toString() {
@@ -38,6 +42,5 @@ public enum Salutation {
 		}
 		throw new IllegalArgumentException("Unexpected value");
 	}
-	
-	
+
 }

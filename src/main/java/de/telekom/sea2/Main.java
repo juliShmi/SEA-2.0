@@ -9,8 +9,8 @@ public class Main {
 		try {
 			app.run(args);
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			e.getMessage();
 		}
 	}
 }

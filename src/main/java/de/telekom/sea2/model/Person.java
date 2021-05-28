@@ -4,30 +4,27 @@ import de.telekom.sea2.lookup.Salutation;
 
 public class Person {
 
-	private static long idCount = 1;
 	private long id;
 	private Salutation salutation;
 	private String firstname;
 	private String lastname;
 
-	public Person() {
-		this.id = ++idCount;
+	public Salutation getSalutation() {
+		return salutation;
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
 	}
 
-	public Salutation getSalutation() {
-		return salutation;
-	}
-
 	public void setSalutation(Salutation salutation) {
-		this.salutation = salutation;
+		if (salutation instanceof Salutation) {
+			this.salutation = salutation;
+		}
 	}
 
 	public String getFirstname() {
@@ -35,7 +32,12 @@ public class Person {
 	}
 
 	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+		try {
+			this.firstname = firstname;
+		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			e.getMessage();
+		}
 	}
 
 	public String getLastname() {
@@ -43,7 +45,12 @@ public class Person {
 	}
 
 	public void setLastname(String lastname) {
-		this.lastname = lastname;
+		try {
+			this.lastname = lastname;
+		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			e.getMessage();
+		}
 	}
 
 }

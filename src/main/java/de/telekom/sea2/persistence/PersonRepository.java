@@ -23,24 +23,34 @@ public class PersonRepository {
 	final static String DRIVER = "org.mariadb.jdbc.Driver";
 
 	public PersonRepository() throws SQLException, ClassNotFoundException {
-		Class.forName(DRIVER);
-		this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb", "seauser", "seapass");
-		this.statement = connection.createStatement();
+		try {
+			Class.forName(DRIVER);
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb", "seauser", "seapass");
+			this.statement = connection.createStatement();
+			getId();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			e.getMessage();
+
+		}
 	}
 
 	public boolean create(Person p) throws SQLException, SQLIntegrityConstraintViolationException {
 		if (p == null)
 			return false;
-		try {
-			preparedStatement = connection
-					.prepareStatement("INSERT INTO personen (ID, ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ?, ? )");
-			preparedStatement.setLong(1, p.getId());
-			preparedStatement.setByte(2, toBytes(p.getSalutation()));
-			preparedStatement.setString(3, p.getFirstname());
-			preparedStatement.setString(4, p.getLastname());
-			preparedStatement.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (p instanceof Person) {
+			try {
+				preparedStatement = connection
+						.prepareStatement("INSERT INTO personen (ANREDE, VORNAME, NACHNAME) VALUES ( ?, ?, ? )");
+				preparedStatement.setByte(1, toBytes(p.getSalutation()));
+				preparedStatement.setString(2, p.getFirstname());
+				preparedStatement.setString(3, p.getLastname());
+				preparedStatement.execute();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				e.getMessage();
+			}
 		}
 		return true;
 	}
@@ -61,6 +71,7 @@ public class PersonRepository {
 			preparedStatement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			e.getMessage();
 		}
 		return true;
 	}
@@ -69,16 +80,24 @@ public class PersonRepository {
 		Person person = new Person();
 		preparedStatement = connection.prepareStatement("SELECT * FROM personen WHERE ID = " + id + "");
 		resultSet = preparedStatement.executeQuery();
-		while (resultSet.next()) {
-			System.out.println("ID: " + resultSet.getLong(1));
-			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
-			System.out.println("Firstname: " + resultSet.getString(3));
-			System.out.println("Lastname: " + resultSet.getString(4));
-			person.setId(resultSet.getLong(1));
-			String salut = fromBytes(resultSet.getByte(2));
-			person.setSalutation(Salutation.fromString(salut));
-			person.setFirstname(resultSet.getString(3));
-			person.setLastname(resultSet.getString(4));
+		if (person != null) {
+			try {
+				while (resultSet.next()) {
+					System.out.println("ID: " + resultSet.getLong(1));
+					System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
+					System.out.println("Firstname: " + resultSet.getString(3));
+					System.out.println("Lastname: " + resultSet.getString(4));
+					person.setId(resultSet.getLong(1));
+					String salut = fromBytes(resultSet.getByte(2));
+					person.setSalutation(Salutation.fromString(salut));
+					person.setFirstname(resultSet.getString(3));
+					person.setLastname(resultSet.getString(4));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				e.getMessage();
+
+			}
 		}
 		return person;
 
@@ -117,7 +136,7 @@ public class PersonRepository {
 
 	}
 
-	public Person search(String vorname, String lastname) throws SQLException, SQLDataException {
+	public Person search(String vorname, String lastname) {
 		String searchFN = "%" + vorname + "%";
 		String searchLN = "%" + lastname + "%";
 		try {
@@ -128,39 +147,66 @@ public class PersonRepository {
 			resultSet = preparedStatement.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			e.getMessage();
 		}
-		while (resultSet.next()) {
-			Person person = new Person();
-			person.setId(resultSet.getLong(1));
-			String salut = fromBytes(resultSet.getByte(2));
-			person.setSalutation(Salutation.fromString(salut));
-			person.setFirstname(resultSet.getString(3));
-			person.setLastname(resultSet.getString(4));
-			System.out.println("ID: " + resultSet.getLong(1));
-			System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
-			System.out.println("Firstname: " + resultSet.getString(3));
-			System.out.println("Lastname: " + resultSet.getString(4));
-			return person;
+		try {
+			while (resultSet.next()) {
+				Person person = new Person();
+				person.setId(resultSet.getLong(1));
+				String salut = fromBytes(resultSet.getByte(2));
+				person.setSalutation(Salutation.fromString(salut));
+				person.setFirstname(resultSet.getString(3));
+				person.setLastname(resultSet.getString(4));
+				System.out.println("ID: " + resultSet.getLong(1));
+				System.out.println("Salutation: " + fromBytes(resultSet.getByte(2)));
+				System.out.println("Firstname: " + resultSet.getString(3));
+				System.out.println("Lastname: " + resultSet.getString(4));
+				return person;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			e.getMessage();
 		}
 		System.out.println("Person not found");
 		return null;
 
 	}
 
-	public boolean deleteAll() throws SQLException {
+	public boolean deleteAll() {
 		if (true) {
-			preparedStatement = connection.prepareStatement("DELETE from personen");
-			preparedStatement.execute();
-			System.out.println("List deleted");
+			try {
+				preparedStatement = connection.prepareStatement("DELETE from personen");
+				preparedStatement.execute();
+				System.out.println("List deleted");
+			} catch (SQLException e) {
+				e.printStackTrace();
+				e.getMessage();
+			}
 		}
 		return false;
 
 	}
 
-	public boolean delete(long id) throws SQLException {
-		if (true) {
-			preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE ID = " + id + "");
+	private void getId() {
+		try {
+			preparedStatement = connection
+					.prepareStatement("ALTER TABLE personen MODIFY ID BIGINT NOT NULL AUTO_INCREMENT");
 			preparedStatement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			e.getMessage();
+		}
+	}
+
+	public boolean delete(long id) {
+		if (true) {
+			try {
+				preparedStatement = connection.prepareStatement("DELETE FROM personen WHERE ID = " + id + "");
+				preparedStatement.execute();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				e.getMessage();
+			}
 		}
 		return false;
 	}
@@ -179,6 +225,7 @@ public class PersonRepository {
 	}
 
 	public String fromBytes(byte salutation) {
+
 		switch (salutation) {
 		case 0:
 			return "Mr";
@@ -191,13 +238,14 @@ public class PersonRepository {
 
 	}
 
-	public void close() throws SQLException {
+	public void close() {
 		try {
 			resultSet.close();
 			statement.close();
 			connection.close();
-		} catch (NullPointerException n) {
-			n.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			e.getMessage();
 		}
 	}
 }
