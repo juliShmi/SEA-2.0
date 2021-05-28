@@ -1,0 +1,1 @@
+MainClass: de.telekom.sea2.Main
