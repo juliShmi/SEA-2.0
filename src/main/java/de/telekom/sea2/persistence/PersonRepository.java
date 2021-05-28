@@ -27,7 +27,7 @@ public class PersonRepository {
 			Class.forName(DRIVER);
 			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/seadb", "seauser", "seapass");
 			this.statement = connection.createStatement();
-			getId();
+			getAutoId();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -178,6 +178,8 @@ public class PersonRepository {
 				preparedStatement = connection.prepareStatement("DELETE from personen");
 				preparedStatement.execute();
 				System.out.println("List deleted");
+				preparedStatement = connection.prepareStatement("ALTER TABLE personen AUTO_INCREMENT = 0");
+				preparedStatement.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				e.getMessage();
@@ -187,7 +189,7 @@ public class PersonRepository {
 
 	}
 
-	private void getId() {
+	private void getAutoId() {
 		try {
 			preparedStatement = connection
 					.prepareStatement("ALTER TABLE personen MODIFY ID BIGINT NOT NULL AUTO_INCREMENT");
