@@ -6,14 +6,18 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Scanner;
 
+import de.telekom.sea2.events.Event;
+import de.telekom.sea2.events.EventListener;
+import de.telekom.sea2.events.EventSubscriber;
 import de.telekom.sea2.lookup.Salutation;
 import de.telekom.sea2.model.Person;
 import de.telekom.sea2.persistence.PersonRepository;
 
-public class Menu {
+public class Menu{
 
 	private String result;
 	private PersonRepository pr;
+
 
 	private Scanner scanner = new Scanner(System.in);
 
@@ -97,7 +101,7 @@ public class Menu {
 		System.out.println("Input id for person to change: ");
 		long id = Long.parseLong(scanner.nextLine());
 		Person p = new Person(); // ?
-		p = pr.get(id);
+		p = pr.read(id);
 		p.setId(id);
 		System.out.println("Input salutation to change: ");
 		Salutation salutation = Salutation.fromString(scanner.nextLine());
@@ -140,7 +144,7 @@ public class Menu {
 	private void getPerson() throws SQLException {
 		System.out.println("Input id: ");
 		long id = Long.parseLong(scanner.nextLine());
-		pr.get(id);
+		pr.read(id);
 	}
 
 	private void inputPerson() throws SQLIntegrityConstraintViolationException, SQLException, ClassNotFoundException {
@@ -160,11 +164,13 @@ public class Menu {
 		String ln = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
 		p.setLastname(ln);
 		pr.create(p);
+
 	}
 
 	private void close() throws SQLException {
 		scanner.close();
 		pr.close();
 	}
+
 
 }
